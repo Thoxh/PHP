@@ -5,6 +5,8 @@
 	}
 
 	echo "Starte Berechnung...<br>";
+
+	// fetch data from HTML
 	$darl = $_POST["darl"];
 	$zins = $_POST["zins"];
 	$laufz = $_POST["laufz"];
@@ -16,57 +18,14 @@
 	// calculate and fill all arrays
 	list($darlArray, $zinsArray, $tilgungArray, $annuiArray, $restArray, $laufzArray) = calculateData($darl, $zins, $laufz, $annui);
 
-	$data = array(
-		
-		array('1' => '111', '2' => '222'),
-		array('1' => '111111', '2' => '222222'),
-	);
-
+	// create main table for later table
 	$tableData = array();
+
+	// transform filled arrays into table rows
 	$tableData = transformArraysForTable($darlArray, $zinsArray, $tilgungArray, $annuiArray, $restArray, $laufzArray);
 
-
-	function html_table($data = array())
-	{
-    $rows = array();
-    foreach ($data as $row) {
-        $cells = array();
-        foreach ($row as $cell) {
-            $cells[] = "<td>{$cell}</td>";
-        }
-        $rows[] = "<tr>" . implode('', $cells) . "</tr>";
-    }
-    return "<table class='hci-table'>" . implode('', $rows) . "</table>";
-	}
-
+	// create and show table
 	echo html_table($tableData);
-
-	function transformArraysForTable($darlArray, $zinsArray, $tilgungArray, $annuiArray, $restArray, $laufzArray) {
-		$tableData = array();
-		$arrayCount = count($laufzArray);
-		echo $arrayCount, "<br/>";
-
-		// run for each row
-		for ($y = 0; $y <= $arrayCount; $y++) {
-			// create array of row
-			$tempArray = array();
-			// fill each field of row
-
-			echo "Output<br/>";
-			array_push($tempArray, $laufzArray[$y]);
-			array_push($tempArray, $zinsArray[$y]);
-			array_push($tempArray, $annuiArray[$y]);
-			array_push($tempArray, $tilgungArray[$y]);
-			array_push($tempArray, $restArray[$y]);
-			array_push($tempArray, $darlArray[$y]);
-
-			print_r($tempArray);
-
-			
-		}
-
-		return $tableData;
-	}
 
 
 	function checkNoFieldEmpty() {
@@ -131,5 +90,46 @@
 		}
 
 		return array($darlArray, $zinsArray, $tilgungArray, $annuiArray, $restArray, $laufzArray);
+	}
+
+	// convert main table array to table view
+	function html_table($data = array()) {
+		$rows = array();
+		foreach ($data as $row) {
+			$cells = array();
+			foreach ($row as $cell) {
+				$cells[] = "<td>{$cell}</td>";
+			}
+			$rows[] = "<tr>" . implode('', $cells) . "</tr>";
+		}
+	
+		return "<table class='hci-table'>" . implode('', $rows) . "</table>";
+
+	}
+
+	function transformArraysForTable($darlArray, $zinsArray, $tilgungArray, $annuiArray, $restArray, $laufzArray) {
+		// main table array
+		$tableData = array();
+		// length of array
+		$arrayCount = count($laufzArray);
+
+		// run for each row
+		for ($y = 0; $y <= $arrayCount; $y++) {
+			// create array of row
+			$tempArray = array();
+
+			// fill each field of row
+			array_push($tempArray, $laufzArray[$y]);
+			array_push($tempArray, $darlArray[$y]);
+			array_push($tempArray, $tilgungArray[$y]);
+			array_push($tempArray, $zinsArray[$y]);
+			array_push($tempArray, $annuiArray[$y]);
+			array_push($tempArray, $restArray[$y]);
+
+			// add row to main table array
+			array_push($tableData, $tempArray);
+		}
+
+		return $tableData;
 	}
 ?>
