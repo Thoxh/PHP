@@ -1,7 +1,7 @@
 <?php
 	checkNavigationFromMain();
 	if (!checkNoFieldEmpty()) {
-		returnToMain();
+		returnToMain("emptyField");
 	}
 
 	echo "Starte Berechnung...<br>";
@@ -39,12 +39,12 @@
 	function checkNavigationFromMain() {
 		if (isset($_POST['darl'], $_POST['zins'], $_POST['laufz'])) {
 		} else {
-			returnToMain();
+			returnToMain("wrongNav");
 		}
 	}
 
-	function returnToMain() {
-		header("Location: http://fbwallinone.th-brandenburg.de/~siebertt/tilgungsplan.html");
+	function returnToMain($param) {
+		header("Location: http://fbwallinone.th-brandenburg.de/~siebertt/tilgungsplan.html?param=$param");
 		exit();
 	}
 
@@ -53,26 +53,27 @@
 	}
 
 	function calculateData($darl, $zins, $laufz, $annui) {
-		$darlArray = []; 
-		$zinsArray = []; 
-		$tilgungArray = [];
-		$annuiArray = [];
-		$restArray = [];
-		$laufzArray = [];
+		// insert captions
+		$darlArray = ["Darlehen"]; 
+		$zinsArray = ["Zinssatz"]; 
+		$tilgungArray = ["Tilgungsbetrag"];
+		$annuiArray = ["Annuität"];
+		$restArray = ["Restbetrag"];
+		$laufzArray = ["Jahr"];
 
-		//make first insert
+		// add first row with calculated values
 		$darlArray[] = $darl;
 		$zinsArray[] = $darl * $zins / 100;
 		$annuiArray[] = $annui;
-		$tilgungArray[] = $annui - $zinsArray[0];
-		$restArray[] = $darlArray[0] - $tilgungArray[0];
+		$tilgungArray[] = $annui - $zinsArray[1];
+		$restArray[] = $darlArray[1] - $tilgungArray[1];
 		$laufzArray[] = 1;
 
-		// calculate for each year
-		for ($x = 1; $x < $laufz; $x++) {
+		// calculate for each following year
+		for ($x = 2; $x < $laufz+1; $x++) {
 
 			// add standards for later tableview
-			$laufzArray[$x] = $x+1;
+			$laufzArray[$x] = $x;
 			$annuiArray[$x] = $annui;
 
 			// darl from rest of previous insert
